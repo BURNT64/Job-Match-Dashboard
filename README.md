@@ -15,6 +15,7 @@ Built with **Python**, **scikit-learn**, and **Streamlit**.
 ---
 
 ## Installation
+<<<<<<< HEAD
 - Clone the repository:
   git clone https://github.com/your-username/job-match-dashboard.git
   cd job-match-dashboard
@@ -24,16 +25,33 @@ Create a virtual environment and install dependencies:
 - source venv/bin/activate    # Mac/Linux
 -  venv\Scripts\activate       # Windows
 - pip install -r requirements.txt
+=======
+1) Clone the repository:
+   git clone https://github.com/your-username/job-match-dashboard.git
+   cd job-match-dashboard
+
+2) Create a virtual environment and install dependencies:
+   python -m venv venv
+   source venv/bin/activate    # Mac/Linux
+   venv\Scripts\activate       # Windows
+   pip install -r requirements.txt
+>>>>>>> f2b49626f027fcc9c3c5898af5ee12d1bdb6042a
 
 ---
 
 ## Usage
+<<<<<<< HEAD
 - Run the app locally:
   streamlit run app.py
+=======
+1) Run the app locally:
+   streamlit run app.py
+>>>>>>> f2b49626f027fcc9c3c5898af5ee12d1bdb6042a
 
 ---
 ## Example
 
+<<<<<<< HEAD
 - CV: Python developer with experience in SQL and data analysis
 - JD: Looking for a software engineer with Python, SQL, and machine learning skills
 
@@ -41,3 +59,15 @@ Output:
 - Match Score: 67%
 - Matching Skills: Python, SQL
 - Missing Skills: Machine Learning
+=======
+CV: Python developer with experience in SQL and data analysis
+
+JD: Looking for a software engineer with Python, SQL, and machine learning skills
+
+Output:
+Match Score: 67%
+
+Matching Skills: Python, SQL
+
+Missing Skills: Machine Learning
+>>>>>>> f2b49626f027fcc9c3c5898af5ee12d1bdb6042a
