@@ -35,6 +35,7 @@ Built with **Python**, **scikit-learn**, and **Streamlit**.
 ## Example
 
 CV: Python developer with experience in SQL and data analysis
+
 JD: Looking for a software engineer with Python, SQL, and machine learning skills
 
 Output:
