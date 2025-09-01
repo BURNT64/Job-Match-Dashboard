@@ -40,5 +40,7 @@ JD: Looking for a software engineer with Python, SQL, and machine learning skill
 
 Output:
 Match Score: 67%
+
 Matching Skills: Python, SQL
+
 Missing Skills: Machine Learning
