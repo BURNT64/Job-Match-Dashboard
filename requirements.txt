@@ -3,3 +3,6 @@ scikit-learn
 spacy
 python-docx
 pdfminer.six
+streamlit
+wordcloud
+matplotlib
