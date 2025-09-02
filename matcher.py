@@ -1,39 +1,57 @@
 import spacy
 
-# Load English model for lemmatization
+# Load spaCy model for lemmatization
 nlp = spacy.load("en_core_web_sm")
 
-def lemmatize_keywords(text):
-    """Lowercase, remove non-alpha tokens, and lemmatize words/phrases"""
+# Synonyms / aliases mapping (can expand over time)
+ALIASES = {
+    "machine learning": ["ml", "ai", "artificial intelligence"],
+    "developer": ["engineer", "programmer"],
+    "python": ["python3", "python 3"],
+    "sql": ["structured query language"],
+    "excel": ["spreadsheet", "microsoft excel"]
+}
+
+# Example weights for key skills (optional)
+SKILL_WEIGHTS = {
+    "python": 3,
+    "machine learning": 3,
+    "sql": 2,
+    "excel": 1,
+    "developer": 2,
+    "engineer": 2
+}
+
+
+def normalize_text(text):
+    """Tokenize, lemmatize, lowercase the text into keywords."""
     doc = nlp(text.lower())
-    # Keep only alphabetic tokens that are not stop words
-    return set([token.lemma_ for token in doc if token.is_alpha and not token.is_stop])
+    return {token.lemma_ for token in doc if token.is_alpha}
+
+
+def expand_aliases(keywords):
+    """Expand keywords with their known aliases."""
+    expanded = set(keywords)
+    for base, synonyms in ALIASES.items():
+        if base in keywords or any(s in keywords for s in synonyms):
+            expanded.add(base)
+            expanded.update(synonyms)
+    return expanded
+
 
 def compare_texts(cv_text, jd_text):
-    """
-    Compare CV and job description using keyword overlap.
-    Returns:
-        score (float): % of JD keywords found in CV
-        matched (set): matching keywords
-        missing (set): JD keywords not in CV
-    """
-    cv_keywords = lemmatize_keywords(cv_text)
-    jd_keywords = lemmatize_keywords(jd_text)
+    """Compare CV text and JD text, return score and matched/missing skills."""
 
-    matched = cv_keywords & jd_keywords
+    cv_keywords = expand_aliases(normalize_text(cv_text))
+    jd_keywords = expand_aliases(normalize_text(jd_text))
+
+    matched = jd_keywords.intersection(cv_keywords)
     missing = jd_keywords - cv_keywords
 
-    # Avoid division by zero
-    score = len(matched) / len(jd_keywords) if jd_keywords else 0
+    # Weighted scoring
+    total_weight = sum(SKILL_WEIGHTS.get(skill, 1) for skill in jd_keywords)
+    matched_weight = sum(SKILL_WEIGHTS.get(skill, 1) for skill in matched)
 
-    return score, matched, missing
+    score = (matched_weight / total_weight * 100) if total_weight > 0 else 0
 
-# Example usage
-if __name__ == "__main__":
-    cv = "Python developer with experience in data analysis and SQL"
-    jd = "Looking for a software engineer with Python, SQL, and machine learning skills"
-
-    score, matched, missing = compare_texts(cv, jd)
-    print(f"Match Score: {score:.2%}")
-    print("Matching Keywords:", matched)
-    print("Missing Keywords:", missing)
+    return score, list(matched), list(missing)

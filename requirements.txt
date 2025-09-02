@@ -1,8 +1,10 @@
+streamlit
 pandas
 scikit-learn
 spacy
 python-docx
+docx2txt
+PyPDF2
 pdfminer.six
-streamlit
 wordcloud
 matplotlib
