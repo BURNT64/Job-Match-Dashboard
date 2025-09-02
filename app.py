@@ -1,4 +1,6 @@
 # app.py
+# run with streamlit run app.py
+
 import streamlit as st
 import re
 from sklearn.feature_extraction.text import CountVectorizer
