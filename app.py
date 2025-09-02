@@ -50,7 +50,7 @@ jd_text = st.text_area("Paste Job Description Here")
 
 uploaded_cv = st.file_uploader("Upload your CV", type=["pdf", "docx"])
 
-if st.button("Analyze") and jd_text and uploaded_cv:
+if st.button("Analyse") and jd_text and uploaded_cv:
     # Extract CV text
     if uploaded_cv.type == "application/pdf":
         cv_text = extract_text_from_pdf(uploaded_cv)
