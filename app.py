@@ -1,10 +1,9 @@
 # app.py
-# run with streamlit run app.py
+# run with: streamlit run app.py
 
 import streamlit as st
 import docx2txt
 import PyPDF2
-import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from matcher import compare_texts
 
@@ -27,30 +26,15 @@ if st.button("Analyze") and jd_text and uploaded_file:
         cv_text = docx2txt.process(uploaded_file)
 
     # Compare
-    score, matched, missing = compare_texts(cv_text, jd_text)
+    results = compare_texts(cv_text, jd_text)
 
     st.subheader("Results")
-    st.metric("Match Score", f"{score:.2f}%")
 
-    st.write("**Matching Skills:**", ", ".join(matched) if matched else "None")
-    st.write("**Missing Skills:**", ", ".join(missing) if missing else "None")
+    # Show metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Hybrid Score", f"{results['hybrid_score']:.2f}%")
+    col2.metric("Keyword Score", f"{results['keyword_score']:.2f}%")
+    col3.metric("Semantic Score", f"{results['semantic_score']:.2f}%")
 
-    # Bar chart
-    st.subheader("Skills Match Breakdown")
-    skills = matched + missing
-    values = [1] * len(matched) + [0] * len(missing)
-
-    fig, ax = plt.subplots()
-    ax.bar(skills, values, color=["green" if v else "red" for v in values])
-    ax.set_ylabel("Match (1=yes, 0=no)")
-    ax.set_title("Matched vs Missing Skills")
-    st.pyplot(fig)
-
-    # Word cloud for missing skills
-    if missing:
-        st.subheader("Missing Skills Word Cloud")
-        wordcloud = WordCloud(width=800, height=400, background_color="white").generate(" ".join(missing))
-        fig, ax = plt.subplots()
-        ax.imshow(wordcloud, interpolation="bilinear")
-        ax.axis("off")
-        st.pyplot(fig)
+    st.write("**Matching Skills:**", ", ".join(results["matched_skills"]) if results["matched_skills"] else "None")
+    st.write("**Missing Skills:**", ", ".join(results["missing_skills"]) if results["missing_skills"] else "None")

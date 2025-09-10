@@ -1,7 +1,11 @@
 import spacy
+from sentence_transformers import SentenceTransformer, util
 
 # Load spaCy model for lemmatization
 nlp = spacy.load("en_core_web_sm")
+
+# Load sentence transformer for semantic similarity
+sem_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Synonyms / aliases mapping (can expand over time)
 ALIASES = {
@@ -23,13 +27,13 @@ SKILL_WEIGHTS = {
 }
 
 
-def normalize_text(text):
+def normalize_text(text: str):
     """Tokenize, lemmatize, lowercase the text into keywords."""
     doc = nlp(text.lower())
     return {token.lemma_ for token in doc if token.is_alpha}
 
 
-def expand_aliases(keywords):
+def expand_aliases(keywords: set):
     """Expand keywords with their known aliases."""
     expanded = set(keywords)
     for base, synonyms in ALIASES.items():
@@ -39,9 +43,8 @@ def expand_aliases(keywords):
     return expanded
 
 
-def compare_texts(cv_text, jd_text):
-    """Compare CV text and JD text, return score and matched/missing skills."""
-
+def keyword_score(cv_text: str, jd_text: str):
+    """Calculate keyword overlap score."""
     cv_keywords = expand_aliases(normalize_text(cv_text))
     jd_keywords = expand_aliases(normalize_text(jd_text))
 
@@ -55,3 +58,32 @@ def compare_texts(cv_text, jd_text):
     score = (matched_weight / total_weight * 100) if total_weight > 0 else 0
 
     return score, list(matched), list(missing)
+
+
+def semantic_score(cv_text: str, jd_text: str):
+    """Calculate semantic similarity score using embeddings."""
+    cv_emb = sem_model.encode(cv_text, convert_to_tensor=True)
+    jd_emb = sem_model.encode(jd_text, convert_to_tensor=True)
+    sim = util.cos_sim(cv_emb, jd_emb)
+    return float(sim) * 100  # scale to 0-100
+
+
+def compare_texts(cv_text: str, jd_text: str):
+    """
+    Compare CV text and JD text.
+    Returns hybrid score, keyword score, semantic score, matched skills, and missing skills.
+    """
+    kw_score, matched, missing = keyword_score(cv_text, jd_text)
+    sem_score = semantic_score(cv_text, jd_text)
+
+    # Hybrid: 50% keyword + 50% semantic
+    hybrid_score = (kw_score * 0.5) + (sem_score * 0.5)
+
+    return {
+        "hybrid_score": hybrid_score,
+        "keyword_score": kw_score,
+        "semantic_score": sem_score,
+        "matched_skills": matched,
+        "missing_skills": missing
+    }
+

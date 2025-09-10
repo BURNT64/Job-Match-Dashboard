@@ -8,3 +8,4 @@ PyPDF2
 pdfminer.six
 wordcloud
 matplotlib
+sentence_transformers
